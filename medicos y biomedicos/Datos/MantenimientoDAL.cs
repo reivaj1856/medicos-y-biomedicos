@@ -41,8 +41,6 @@ namespace medicos_y_biomedicos.Datos
                     lista.Add(NewMethod(dr));
                 }
             }
-            return lista;
-        }
 
         private static Mantenimiento NewMethod(SqlDataReader dr)
         {
