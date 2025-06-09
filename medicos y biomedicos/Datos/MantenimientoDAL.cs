@@ -46,8 +46,6 @@ namespace medicos_y_biomedicos.Datos
                     });
                 }
             }
-            return lista;
-        }
 
         // Método para actualizar un mantenimiento existente
         public bool Actualizar(Mantenimiento m)
