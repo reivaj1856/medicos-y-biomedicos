@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -11,108 +13,111 @@ using medicos_y_biomedicos.Datos;
 using medicos_y_biomedicos.Entidades;
 using medicos_y_biomedicos.Formularios;
 
+
 namespace medicos_y_biomedicos
 {
     public partial class VentanaVenta : Form
     {
-        
-        public VentanaVenta()
+        private Usuario us;
+        public VentanaVenta(Usuario us)
         {
-            InitializeComponent();
+            InitializeComponent();  
+            this.us = us; // Guardar el usuario para futuras referencias si es necesario
         }
 
         private void CargarEquipos()
         {
             EquipoDAL dal = new EquipoDAL();
-            dataGridVenta.DataSource = dal.Listar();
-            dataGridVenta.ClearSelection();
-            dataGridVenta.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            List<Equipo> listaEquipos = dal.Listar();
+
+            // HashSet para evitar modelos duplicados
+            HashSet<string> modelosMostrados = new HashSet<string>();
+
+            panelVentas.Controls.Clear();
+
+            foreach (Equipo item in listaEquipos)
+            {
+                if (modelosMostrados.Contains(item.Modelo))
+                    continue; // Ya se mostró un equipo de este modelo
+
+                modelosMostrados.Add(item.Modelo); // Registrar el modelo como mostrado
+
+                // Crear panel contenedor
+                Panel contenedor = new Panel
+                {
+                    Width = 240,
+                    Height = 275,
+                    Margin = new Padding(5),
+                    BorderStyle = BorderStyle.None,
+                };
+
+                // Imagen
+                PictureBox pictureBox = new PictureBox
+                {
+                    Width = 220,
+                    Height = 200,
+                    SizeMode = PictureBoxSizeMode.StretchImage,
+                    Location = new Point(10, 10)
+                };
+
+                if (item.Imagen != null)
+                {
+                    using (MemoryStream ms = new MemoryStream(item.Imagen))
+                    {
+                        pictureBox.Image = Image.FromStream(ms);
+                    }
+                }
+
+                // Etiqueta con texto
+                Label label = new Label
+                {
+                    Text = $"{item.Modelo}",
+                    AutoSize = false,
+                    Width = 220,
+                    Height = 60,
+                    Location = new Point(10, 210),
+                    TextAlign = ContentAlignment.TopCenter,
+                    Font = new Font("Consolas", 14, FontStyle.Regular),
+                };
+
+                // Eventos opcionales de clic
+                pictureBox.Click += (s, e) =>  AbrirFormulario(new MostrarMarcas(item.Modelo,this.us)); 
+                label.Click += (s, e) => AbrirFormulario(new MostrarMarcas(item.Modelo, this.us));
+                contenedor.Click += (s, e) => AbrirFormulario(new MostrarMarcas(item.Modelo, this.us));
+
+                // Agregar controles al panel contenedor
+                contenedor.Controls.Add(pictureBox);
+                contenedor.Controls.Add(label);
+
+                // Agregar al FlowLayoutPanel
+                panelVentas.Controls.Add(contenedor);
+            }
         }
+
+
         private void VentanaVenta_Load(object sender, EventArgs e)
         {
             CargarEquipos();
+           
         }
-        private void btnVenta_Click(object sender, EventArgs e)
+
+        private void btnActualizar_Click(object sender, EventArgs e)
         {
-            if (dataGridVenta.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Seleccione un equipo para vender.");
-                return;
-            }
-            var fila = dataGridVenta.SelectedRows[0];
-            int idEquipo = Convert.ToInt32(fila.Cells["IdEquipo"].Value);
-            decimal precio = Convert.ToDecimal(fila.Cells["Precio"].Value);
-
-            // Podrías usar un formulario aparte o un NumericUpDown para definir cantidad
-            int cantidad = 1;
-            decimal total = cantidad * precio;
-
-            Venta nuevaVenta = new Venta
-            {
-                IdEquipo = idEquipo,
-                Fecha = DateTime.Now,
-                Cantidad = cantidad,
-                Total = total
-            };
-
-            VentaDAL ventaDAL = new VentaDAL();
-            if (ventaDAL.Insertar(nuevaVenta))
-            {
-                MessageBox.Show("Venta realizada correctamente.");
-            }
-            else
-            {
-                MessageBox.Show("No se pudo realizar la venta.");
-            }
+            CargarEquipos();
         }
-        private void btnEliminar_Click(object sender, EventArgs e)
+        private void AbrirFormulario(Form formulario)
         {
-            if (dataGridVenta.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Seleccione un equipo para eliminar.");
-                return;
-            }
+            formulario.TopLevel = false;
+            formulario.FormBorderStyle = FormBorderStyle.None;
+            formulario.Dock = DockStyle.Fill;
 
-            var fila = dataGridVenta.SelectedRows[0];
-            
-            int idEquipo = Convert.ToInt32(dataGridVenta.SelectedRows[0].Cells["IdEquipo"].Value);
-            DialogResult result = MessageBox.Show("¿Está seguro de eliminar este equipo?", "Confirmación", MessageBoxButtons.YesNo);
-            if (result == DialogResult.Yes)
-            {
-                EquipoDAL equi = new EquipoDAL();
-                try
-                {
-                    if (equi.Eliminar(idEquipo))
-                    {
-                        MessageBox.Show("Equipo eliminado.");
-                        CargarEquipos();
-                    }
-                    else
-                    {
-                        MessageBox.Show("No se pudo eliminar.");
-                    }
-                }
-                catch
-                {
-                    MessageBox.Show("No se pudo eliminar la tabla es dependiente de otra referencia.");
-                }
-            }
+            panelVentas1.Controls.Clear();
+            panelVentas1.Controls.Add(formulario);
+            panelVentas1.Tag = formulario;
+
+            formulario.Show();
         }
-        private void btnEditar_Click(object sender, EventArgs e)
-        {
-            if (dataGridVenta.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Seleccione un equipo para editar.");
-                return;
-            }
 
-            int idEquipo = Convert.ToInt32(dataGridVenta.SelectedRows[0].Cells["IdEquipo"].Value);
 
-             RegistrarEquipo formEditar = new RegistrarEquipo(idEquipo);
-             if (formEditar.ShowDialog() == DialogResult.OK)
-             {
-                 CargarEquipos(); // recargar si se editó
-             }
-        }
     }
 }

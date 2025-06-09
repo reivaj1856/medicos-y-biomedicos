@@ -1,108 +1,140 @@
-﻿using System;
+﻿using medicos_y_biomedicos.Datos;
+using medicos_y_biomedicos.Entidades;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using medicos_y_biomedicos.Entidades;
 using System.Data;
+using System;
 
-namespace medicos_y_biomedicos.Datos
+public class EquipoDAL
 {
-    public class EquipoDAL
+    private readonly Conexion conexion = new Conexion();
+
+    public List<Equipo> Listar()
     {
-        private readonly Conexion conexion = new Conexion();
-        public List<Equipo> Listar()
+        List<Equipo> lista = new List<Equipo>();
+        using (SqlConnection conn = conexion.AbrirConexion())
         {
-            List<Equipo> lista = new List<Equipo>();
-            using (SqlConnection conn = conexion.AbrirConexion())
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Equipo", conn);
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
             {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Equipo", conn);
-                SqlDataReader dr = cmd.ExecuteReader();
-                while (dr.Read())
+                lista.Add(new Equipo
                 {
-                    lista.Add(new Equipo
-                    {
-                        IdEquipo = Convert.ToInt32(dr["IdEquipo"]),
-                        Nombre = dr["Nombre"].ToString(),
-                        Marca = dr["Marca"].ToString(),
-                        Modelo = dr["Modelo"].ToString(),
-                        Precio = Convert.ToDecimal(dr["Precio"])
-                    });
-                }
-            }
-            return lista;
-        }
-
-        // Método para insertar un nuevo equipo
-        public bool Insertar(Equipo eq)
-        {
-            using (SqlConnection conn = conexion.AbrirConexion())
-            {
-                SqlCommand cmd = new SqlCommand(
-                    "INSERT INTO Equipo (Nombre, Marca, Modelo, Precio) VALUES (@Nombre, @Marca, @Modelo, @Precio)",
-                    conn
-                );
-                cmd.Parameters.AddWithValue("@Nombre", eq.Nombre);
-                cmd.Parameters.AddWithValue("@Marca", eq.Marca);
-                cmd.Parameters.AddWithValue("@Modelo", eq.Modelo);
-                cmd.Parameters.AddWithValue("@Precio", eq.Precio);
-                return cmd.ExecuteNonQuery() > 0;
+                    IdEquipo = Convert.ToInt32(dr["IdEquipo"]),
+                    Nombre = dr["Nombre"].ToString(),
+                    Marca = dr["Marca"].ToString(),
+                    Modelo = dr["Modelo"].ToString(),
+                    Precio = Convert.ToDecimal(dr["Precio"]),
+                    Imagen = dr["Imagen"] == DBNull.Value ? null : (byte[])dr["Imagen"]
+                });
             }
         }
+        return lista;
+    }
 
-        // Método para actualizar un equipo existente
-        public bool Actualizar(Equipo eq)
+    public bool Insertar(Equipo eq)
+    {
+        using (SqlConnection conn = conexion.AbrirConexion())
         {
-            using (SqlConnection conn = conexion.AbrirConexion())
-            {
-                SqlCommand cmd = new SqlCommand(
-                    "UPDATE Equipo SET Nombre = @Nombre, Marca = @Marca, Modelo = @Modelo, Precio = @Precio WHERE IdEquipo = @IdEquipo",
-                    conn
-                );
-                cmd.Parameters.AddWithValue("@IdEquipo", eq.IdEquipo);
-                cmd.Parameters.AddWithValue("@Nombre", eq.Nombre);
-                cmd.Parameters.AddWithValue("@Marca", eq.Marca);
-                cmd.Parameters.AddWithValue("@Modelo", eq.Modelo);
-                cmd.Parameters.AddWithValue("@Precio", eq.Precio);
-                return cmd.ExecuteNonQuery() > 0;
-            }
-        }
+            SqlCommand cmd = new SqlCommand(
+                "INSERT INTO Equipo (Nombre, Marca, Modelo, Precio, Imagen) VALUES (@Nombre, @Marca, @Modelo, @Precio, @Imagen)",
+                conn
+            );
+            cmd.Parameters.AddWithValue("@Nombre", eq.Nombre);
+            cmd.Parameters.AddWithValue("@Marca", eq.Marca);
+            cmd.Parameters.AddWithValue("@Modelo", eq.Modelo);
+            cmd.Parameters.AddWithValue("@Precio", eq.Precio);
+            cmd.Parameters.Add("@Imagen", SqlDbType.VarBinary).Value = (object)eq.Imagen ?? DBNull.Value;
 
-        // Método para eliminar un equipo por su Id
-        public bool Eliminar(int id)
-        {
-            using (SqlConnection conn = conexion.AbrirConexion())
-            {
-                SqlCommand cmd = new SqlCommand("DELETE FROM Equipo WHERE IdEquipo = @Id", conn);
-                cmd.Parameters.AddWithValue("@Id", id);
-                return cmd.ExecuteNonQuery() > 0;
-            }
-        }
-
-
-        // Método para obtener un equipo específico por su Id
-        public Equipo ObtenerPorId(int id)
-        {
-            Equipo eq = null;
-            using (SqlConnection conn = conexion.AbrirConexion())
-            {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Equipo WHERE IdEquipo = @Id", conn);
-                cmd.Parameters.AddWithValue("@Id", id);
-                SqlDataReader dr = cmd.ExecuteReader();
-                if (dr.Read())
-                {
-                    eq = new Equipo
-                    {
-                        IdEquipo = Convert.ToInt32(dr["IdEquipo"]),
-                        Nombre = dr["Nombre"].ToString(),
-                        Marca = dr["Marca"].ToString(),
-                        Modelo = dr["Modelo"].ToString(),
-                        Precio = Convert.ToDecimal(dr["Precio"])
-                    };
-                }
-            }
-            return eq;
+            return cmd.ExecuteNonQuery() > 0;
         }
     }
+
+    public bool Actualizar(Equipo eq)
+    {
+        using (SqlConnection conn = conexion.AbrirConexion())
+        {
+            SqlCommand cmd = new SqlCommand(
+                "UPDATE Equipo SET Nombre = @Nombre, Marca = @Marca, Modelo = @Modelo, Precio = @Precio, Imagen = @Imagen WHERE IdEquipo = @IdEquipo",
+                conn
+            );
+            cmd.Parameters.AddWithValue("@IdEquipo", eq.IdEquipo);
+            cmd.Parameters.AddWithValue("@Nombre", eq.Nombre);
+            cmd.Parameters.AddWithValue("@Marca", eq.Marca);
+            cmd.Parameters.AddWithValue("@Modelo", eq.Modelo);
+            cmd.Parameters.AddWithValue("@Precio", eq.Precio);
+            cmd.Parameters.Add("@Imagen", SqlDbType.VarBinary).Value = (object)eq.Imagen ?? DBNull.Value;
+
+            return cmd.ExecuteNonQuery() > 0;
+        }
+    }
+
+    public bool Eliminar(int id)
+    {
+        using (SqlConnection conn = conexion.AbrirConexion())
+        {
+            SqlCommand cmd = new SqlCommand("DELETE FROM Equipo WHERE IdEquipo = @Id", conn);
+            cmd.Parameters.AddWithValue("@Id", id);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+    }
+
+    public Equipo ObtenerPorId(int id)
+    {
+        Equipo eq = null;
+        using (SqlConnection conn = conexion.AbrirConexion())
+        {
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Equipo WHERE IdEquipo = @Id", conn);
+            cmd.Parameters.AddWithValue("@Id", id);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                eq = new Equipo
+                {
+                    IdEquipo = Convert.ToInt32(dr["IdEquipo"]),
+                    Nombre = dr["Nombre"].ToString(),
+                    Marca = dr["Marca"].ToString(),
+                    Modelo = dr["Modelo"].ToString(),
+                    Precio = Convert.ToDecimal(dr["Precio"]),
+                    Imagen = dr["Imagen"] == DBNull.Value ? null : (byte[])dr["Imagen"]
+                };
+            }
+        }
+        return eq;
+    }
+    public List<Equipo> ObtenerPorModelo(string modelo)
+    {
+        List<Equipo> lista = new List<Equipo>();
+
+        using (SqlConnection conn = conexion.AbrirConexion())
+        {
+
+            string query = "SELECT * FROM Equipo WHERE Modelo = @Modelo"; // Asegúrate que 'Equipo' sea el nombre correcto
+
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@Modelo", modelo);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Equipo equipo = new Equipo
+                        {
+                            IdEquipo = Convert.ToInt32(reader["IdEquipo"]),
+                            Nombre = reader["Nombre"].ToString(),
+                            Marca = reader["Marca"].ToString(),
+                            Modelo = reader["Modelo"].ToString(),
+                            Precio = Convert.ToInt32(reader["Precio"]),
+                            Imagen = reader["Imagen"] as byte[]
+                        };
+                        lista.Add(equipo);
+                    }
+                }
+            }
+        }
+
+        return lista;
+    }
+
 }

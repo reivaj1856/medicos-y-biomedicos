@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace medicos_y_biomedicos.Formularios
         {
             InitializeComponent();
             this.id = -1; // Inicializar id a 0 para nuevo registro
+            
         }
         public RegistrarEquipo(int id)
         {
@@ -38,6 +40,7 @@ namespace medicos_y_biomedicos.Formularios
                     textBoxMarca.Text = equipo.Marca;
                     textBoxModelo.Text = equipo.Modelo;
                     numericPrecio.Value = equipo.Precio;
+                    MostrarImagen(equipo.Imagen); // Mostrar imagen si existe
                 }
                 else
                 {
@@ -53,7 +56,7 @@ namespace medicos_y_biomedicos.Formularios
             if (string.IsNullOrWhiteSpace(textBoxEquipo.Text) ||
                 string.IsNullOrWhiteSpace(textBoxMarca.Text) ||
                 string.IsNullOrWhiteSpace(textBoxModelo.Text) ||
-                numericPrecio.Value <= 0)
+                numericPrecio.Value <= 1)
             {
                 MessageBox.Show("Por favor, complete todos los campos correctamente.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -67,8 +70,16 @@ namespace medicos_y_biomedicos.Formularios
                     Nombre = textBoxEquipo.Text.Trim(),
                     Marca = textBoxMarca.Text.Trim(),
                     Modelo = textBoxModelo.Text.Trim(),
-                    Precio = numericPrecio.Value
+                    Precio = numericPrecio.Value,
+                    Imagen = ImagenAPBytes() // Convertir imagen a bytes
                 };
+
+                byte[] imgBytes = ImagenAPBytes();
+                if (imgBytes == null || imgBytes.Length == 0)
+                {
+                    MessageBox.Show("Imagen vacía o no válida");
+                    return;
+                }
 
                 bool resultado;
 
@@ -107,6 +118,45 @@ namespace medicos_y_biomedicos.Formularios
             textBoxMarca.Text = "";
             textBoxModelo.Text = "";
             numericPrecio.Value = 0;
+        }
+
+        private void btnImportar_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "Archivos de imagen|*.jpg;*.jpeg;*.png;*.bmp";
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                pictureBox1.Image = Image.FromFile(openFileDialog1.FileName);
+            }
+        }
+        private byte[] ImagenAPBytes()
+        {
+            if (pictureBox1.Image == null) return null;
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                pictureBox1.Image.Save(ms, pictureBox1.Image.RawFormat);
+                return ms.ToArray();
+            }
+        }
+        private void MostrarImagen(byte[] datosImagen)
+        {
+            if (datosImagen != null)
+            {
+                using (MemoryStream ms = new MemoryStream(datosImagen))
+                {
+                    pictureBox1.Image = Image.FromStream(ms);
+                }
+            }
+            else
+            {
+                pictureBox1.Image = null; // O alguna imagen por defecto
+            }
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

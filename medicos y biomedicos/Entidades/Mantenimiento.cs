@@ -12,5 +12,6 @@ namespace medicos_y_biomedicos.Entidades
         public DateTime FechaIngreso { get; set; }
         public string Estado { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
+        public byte[] Imagen { get; internal set; }
     }
 }

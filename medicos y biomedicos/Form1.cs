@@ -8,27 +8,51 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using medicos_y_biomedicos.Entidades;
 using medicos_y_biomedicos.Formularios;
 
 namespace medicos_y_biomedicos
 {
     public partial class Form1 : Form
     {
+        private bool loginVerificado; // Variable para verificar el estado de inicio de sesión
+        private login login;
         private int tolerance = 12;
         private const int WM_NCHITTEST = 132;
         private const int HTBOTTOMRIGHT = 17;
         private Rectangle sizeGripRectangle;
+        private Usuario us; // Variable para almacenar el usuario actual
         public Form1()
         {
             InitializeComponent();
             customizeDesing();
             this.SetStyle(ControlStyles.ResizeRedraw, true);
             this.DoubleBuffered = true;
+            this.login = new login();
+            login.ShowDialog(); // Show the login dialog when the form loads
+            us = null;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            this.us = login.getUsuario(); // Get the user from the login dialog
+            if (us != null)
+            {
+                
+                if (us.Administrador == "no")
+                {
+                    btnregistros.Visible = false; // Hide the registros button if the user is not an administrator
+                    btnInsertar.Visible = false; // Hide the insert button if the user is not an administrator
+                }
+                this.loginVerificado = true; // Set login status to verified
+                this.Text = $"Bienvenido {us.Nombre}"; // Set the form title with the user's name
+            }
+            else
+            {
+                this.loginVerificado = false; // Set login status to not verified
+                MessageBox.Show("Inicio de sesión fallido. La aplicación se cerrará.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit(); // Close the application if login fails
+            }
         }
         #region menu
         private void customizeDesing()
@@ -112,7 +136,8 @@ namespace medicos_y_biomedicos
 
         private void btnequipos_Click(object sender, EventArgs e)
         {
-            AbrirFormulario<VentanaVenta>();
+            VentanaVenta ventanaVenta = new VentanaVenta(us);
+            AbrirFormulario(ventanaVenta);
             hideSubMenu();
         }
 
@@ -123,13 +148,13 @@ namespace medicos_y_biomedicos
 
         private void btnreventa_Click(object sender, EventArgs e)
         {
-            AbrirFormulario<RegistroVenta>();
+            AbrirFormulario(new RegistroVenta());
             hideSubMenu();
         }
 
         private void btnmantenimiento_Click(object sender, EventArgs e)
         {
-            AbrirFormulario<ResgistroMantenimiento>();
+            AbrirFormulario(new ResgistroMantenimiento());
             hideSubMenu();
         }
         private void button3_Click_1(object sender, EventArgs e)
@@ -138,12 +163,12 @@ namespace medicos_y_biomedicos
         }
         private void btnReEquipo_Click(object sender, EventArgs e)
         {
-            AbrirFormulario<RegistrarEquipo>();
+            AbrirFormulario(new RegistrarEquipo());
             hideSubMenu();
         }
         private void btnReMantenimiento_Click(object sender, EventArgs e)
         {
-            AbrirFormulario<RegistrarMantenimiento>();
+            AbrirFormulario(new RegistrarMantenimiento());
             hideSubMenu();
         }
         #endregion
@@ -185,22 +210,16 @@ namespace medicos_y_biomedicos
         [DllImport("user32.DLL", EntryPoint = "ReleaseCapture")]
         private extern static void ReleaseCapture();
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            AbrirFormulario<VentanaVenta>();
-            btnventa.BackColor = Color.FromArgb(12, 61, 92);
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
-            AbrirFormulario<RegistroVenta>();
-            btnreventa.BackColor = Color.FromArgb(12, 61, 92);
+            AbrirFormulario(new RegistroVenta());
+
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            AbrirFormulario<ResgistroMantenimiento>();
-            btnmantenimiento.BackColor = Color.FromArgb(12, 61, 92);
+            AbrirFormulario(new ResgistroMantenimiento());
+            
         }
 
         [DllImport("user32.DLL", EntryPoint = "SendMessage")]
@@ -209,41 +228,31 @@ namespace medicos_y_biomedicos
         private void panelsuperior_MouseMove(object sender, MouseEventArgs e)
         {
             ReleaseCapture();
-            SendMessage(this.Handle, 0x112, 0xf012, 0);
+
         }
 
-        private void AbrirFormulario<MiForm>() where MiForm : Form, new()
+        private void panelsuperior_Paint(object sender, PaintEventArgs e)
         {
-            Form formulario;
-            formulario = panelformularios.Controls.OfType<MiForm>().FirstOrDefault();//Busca en la colecion el formulario
-            //si el formulario/instancia no existe
-            if (formulario == null)
-            {
-                formulario = new MiForm();
-                formulario.TopLevel = false;
-                formulario.FormBorderStyle = FormBorderStyle.None;
-                formulario.Dock = DockStyle.Fill;
-                panelformularios.Controls.Add(formulario);
-                panelformularios.Tag = formulario;
-                formulario.Show();
-                formulario.BringToFront();
-                formulario.FormClosed += new FormClosedEventHandler(CloseForms);
-            }
-            //si el formulario/instancia existe
-            else
-            {
-                formulario.BringToFront();
-            }
+
         }
-        private void CloseForms(object sender, FormClosedEventArgs e)
+
+        private void panelformularios_Paint(object sender, PaintEventArgs e)
         {
-            if (Application.OpenForms["Form1"] == null)
-                btnventa.BackColor = Color.FromArgb(4, 41, 68);
-            if (Application.OpenForms["Form2"] == null)
-                btnreventa.BackColor = Color.FromArgb(4, 41, 68);
-            if (Application.OpenForms["Form3"] == null)
-                btnmantenimiento.BackColor = Color.FromArgb(4, 41, 68);
         }
+
+        private void AbrirFormulario(Form formulario)
+        {
+            formulario.TopLevel = false;
+            formulario.FormBorderStyle = FormBorderStyle.None;
+            formulario.Dock = DockStyle.Fill;
+
+            panelformularios.Controls.Clear();
+            panelformularios.Controls.Add(formulario);
+            panelformularios.Tag = formulario;
+
+            formulario.Show();
+        }
+       
         #endregion
     }
 }

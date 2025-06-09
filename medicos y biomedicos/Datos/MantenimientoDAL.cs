@@ -17,12 +17,13 @@ namespace medicos_y_biomedicos.Datos
             using (SqlConnection conn = conexion.AbrirConexion())
             {
                 SqlCommand cmd = new SqlCommand(
-                    "INSERT INTO Mantenimiento (FechaIngreso, Estado, Descripcion) VALUES (@FechaIngreso, @Estado, @Descripcion)",
+                    "INSERT INTO Mantenimiento (FechaIngreso, Estado, Descripcion, Imagen) VALUES (@FechaIngreso, @Estado, @Descripcion, @Imagen)",
                     conn
                 );
                 cmd.Parameters.AddWithValue("@FechaIngreso", m.FechaIngreso);
                 cmd.Parameters.AddWithValue("@Estado", m.Estado);
                 cmd.Parameters.AddWithValue("@Descripcion", m.Descripcion);
+                cmd.Parameters.AddWithValue("@Imagen", m.Imagen);
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
@@ -37,17 +38,26 @@ namespace medicos_y_biomedicos.Datos
                 SqlDataReader dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
-                    lista.Add(new Mantenimiento
-                    {
-                        IdMantenimiento = Convert.ToInt32(dr["IdMantenimiento"]),
-                        FechaIngreso = Convert.ToDateTime(dr["FechaIngreso"]),
-                        Estado = dr["Estado"].ToString(),
-                        Descripcion = dr["Descripcion"].ToString()
-                    });
+                    lista.Add(NewMethod(dr));
                 }
             }
             return lista;
         }
+
+        private static Mantenimiento NewMethod(SqlDataReader dr)
+        {
+            return new Mantenimiento
+            {
+                IdMantenimiento = Convert.ToInt32(dr["IdMantenimiento"]),
+                FechaIngreso = Convert.ToDateTime(dr["FechaIngreso"]),
+                Estado = dr["Estado"].ToString(),
+                Descripcion = dr["Descripcion"].ToString(),
+                Imagen = dr["Imagen"] == DBNull.Value ? null : (byte[])dr["Imagen"]
+            };
+            
+        }
+
+
 
         // Método para actualizar un mantenimiento existente
         public bool Actualizar(Mantenimiento m)
@@ -55,13 +65,19 @@ namespace medicos_y_biomedicos.Datos
             using (SqlConnection conn = conexion.AbrirConexion())
             {
                 SqlCommand cmd = new SqlCommand(
-                    "UPDATE Mantenimiento SET FechaIngreso = @FechaIngreso, Estado = @Estado, Descripcion = @Descripcion WHERE IdMantenimiento = @IdMantenimiento",
-                    conn
+                "UPDATE Mantenimiento SET FechaIngreso = @FechaIngreso, Estado = @Estado, Descripcion = @Descripcion, Imagen = @Imagen WHERE IdMantenimiento = @IdMantenimiento",
+                conn
                 );
+
                 cmd.Parameters.AddWithValue("@IdMantenimiento", m.IdMantenimiento);
                 cmd.Parameters.AddWithValue("@FechaIngreso", m.FechaIngreso);
                 cmd.Parameters.AddWithValue("@Estado", m.Estado);
                 cmd.Parameters.AddWithValue("@Descripcion", m.Descripcion);
+                if (m.Imagen != null)
+                    cmd.Parameters.AddWithValue("@Imagen", m.Imagen);
+                else
+                    cmd.Parameters.Add("@Imagen", SqlDbType.VarBinary).Value = DBNull.Value;
+
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
@@ -93,7 +109,8 @@ namespace medicos_y_biomedicos.Datos
                         IdMantenimiento = Convert.ToInt32(dr["IdMantenimiento"]),
                         FechaIngreso = Convert.ToDateTime(dr["FechaIngreso"]),
                         Estado = dr["Estado"].ToString(),
-                        Descripcion = dr["Descripcion"].ToString()
+                        Descripcion = dr["Descripcion"].ToString(),
+                        Imagen = dr["Imagen"] == DBNull.Value ? null : (byte[])dr["Imagen"]
                     };
                 }
             }
@@ -101,30 +118,32 @@ namespace medicos_y_biomedicos.Datos
         }
         public bool CambiarEstado(int id, string nuevoEstado)
         {
-            bool resultado = false;
-
             using (SqlConnection conn = conexion.AbrirConexion())
             {
                 string query = "UPDATE Mantenimiento SET Estado = @Estado WHERE IdMantenimiento = @IdMantenimiento";
-
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@Estado", nuevoEstado);
                     cmd.Parameters.AddWithValue("@IdMantenimiento", id);
 
-                    // conn.Open(); // Elimina esta línea
-
-                    int filasAfectadas = cmd.ExecuteNonQuery();
-
-                    resultado = filasAfectadas > 0;
+                        return cmd.ExecuteNonQuery() > 0;
                 }
             }
-
-            return resultado;
         }
-
+        public bool EliminarImagen(int id)
+        {
+            using (SqlConnection conn = conexion.AbrirConexion())
+            {
+                SqlCommand cmd = new SqlCommand(
+                "UPDATE Mantenimiento SET Imagen = NULL WHERE IdMantenimiento = @Id",
+                conn
+                );
+                cmd.Parameters.AddWithValue("@Id", id);
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
         // Asegúrate de tener también este método para cargar los datos:
-        
+
     }
 
 }

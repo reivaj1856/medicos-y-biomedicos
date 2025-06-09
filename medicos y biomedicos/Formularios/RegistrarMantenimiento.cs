@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ namespace medicos_y_biomedicos.Formularios
                 {
                     richTextBoxdetalles.Text = m.Descripcion;
                     monthCalendar.SetDate(m.FechaIngreso);
+                    MostrarImagen(m.Imagen); // Mostrar imagen si existe
                 }
                 else
                 {
@@ -62,7 +64,8 @@ namespace medicos_y_biomedicos.Formularios
                     IdMantenimiento = this.id,
                     FechaIngreso = monthCalendar.SelectionStart,
                     Estado = "En proceso",
-                    Descripcion = richTextBoxdetalles.Text.Trim()
+                    Descripcion = richTextBoxdetalles.Text.Trim(),
+                    Imagen = ImagenAPBytes()
                 };
 
                 bool resultado;
@@ -100,6 +103,41 @@ namespace medicos_y_biomedicos.Formularios
         {
             richTextBoxdetalles.Text = "";
             monthCalendar.SetDate(DateTime.Today); // Opcional: reset a la fecha actual
+        }
+
+        private void btnImportar_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "Archivos de imagen|*.jpg;*.jpeg;*.png;*.bmp";
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                pictureBox1.Image = Image.FromFile(openFileDialog1.FileName);
+            }
+        }
+
+        private byte[] ImagenAPBytes()
+        {
+            if (pictureBox1.Image == null) return null;
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                pictureBox1.Image.Save(ms, pictureBox1.Image.RawFormat);
+                return ms.ToArray();
+            }
+        }
+        private void MostrarImagen(byte[] datosImagen)
+        {
+            if (datosImagen != null)
+            {
+                using (MemoryStream ms = new MemoryStream(datosImagen))
+                {
+                    pictureBox1.Image = Image.FromStream(ms);
+                }
+            }
+            else
+            {
+                pictureBox1.Image = null; // O alguna imagen por defecto
+            }
         }
     }
 }

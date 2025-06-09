@@ -13,15 +13,18 @@ namespace medicos_y_biomedicos.Datos
     public class VentaDAL
     {
         private readonly Conexion conexion = new Conexion();
+
+        // Insertar una nueva venta
         public bool Insertar(Venta v)
         {
             using (SqlConnection conn = conexion.AbrirConexion())
             {
                 SqlCommand cmd = new SqlCommand(
-                    "INSERT INTO Venta (IdEquipo, Fecha, Cantidad, Total) VALUES (@IdEquipo, @Fecha, @Cantidad, @Total)",
+                    "INSERT INTO Venta (IdEquipo, IdUsuario, Fecha, Cantidad, Total) VALUES (@IdEquipo, @IdUsuario, @Fecha, @Cantidad, @Total)",
                     conn
                 );
                 cmd.Parameters.AddWithValue("@IdEquipo", v.IdEquipo);
+                cmd.Parameters.AddWithValue("@IdUsuario", v.IdUsuario);
                 cmd.Parameters.AddWithValue("@Fecha", v.Fecha);
                 cmd.Parameters.AddWithValue("@Cantidad", v.Cantidad);
                 cmd.Parameters.AddWithValue("@Total", v.Total);
@@ -29,7 +32,7 @@ namespace medicos_y_biomedicos.Datos
             }
         }
 
-        // Método para listar todas las ventas
+        // Listar todas las ventas
         public List<Venta> Listar()
         {
             List<Venta> lista = new List<Venta>();
@@ -43,6 +46,7 @@ namespace medicos_y_biomedicos.Datos
                     {
                         IdVenta = Convert.ToInt32(dr["IdVenta"]),
                         IdEquipo = Convert.ToInt32(dr["IdEquipo"]),
+                        IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
                         Fecha = Convert.ToDateTime(dr["Fecha"]),
                         Cantidad = Convert.ToInt32(dr["Cantidad"]),
                         Total = Convert.ToDecimal(dr["Total"])
@@ -52,17 +56,18 @@ namespace medicos_y_biomedicos.Datos
             return lista;
         }
 
-        // Método para actualizar una venta existente
+        // Actualizar una venta existente
         public bool Actualizar(Venta v)
         {
             using (SqlConnection conn = conexion.AbrirConexion())
             {
                 SqlCommand cmd = new SqlCommand(
-                    "UPDATE Venta SET IdEquipo = @IdEquipo, Fecha = @Fecha, Cantidad = @Cantidad, Total = @Total WHERE IdVenta = @IdVenta",
+                    "UPDATE Venta SET IdEquipo = @IdEquipo, IdUsuario = @IdUsuario, Fecha = @Fecha, Cantidad = @Cantidad, Total = @Total WHERE IdVenta = @IdVenta",
                     conn
                 );
                 cmd.Parameters.AddWithValue("@IdVenta", v.IdVenta);
                 cmd.Parameters.AddWithValue("@IdEquipo", v.IdEquipo);
+                cmd.Parameters.AddWithValue("@IdUsuario", v.IdUsuario);
                 cmd.Parameters.AddWithValue("@Fecha", v.Fecha);
                 cmd.Parameters.AddWithValue("@Cantidad", v.Cantidad);
                 cmd.Parameters.AddWithValue("@Total", v.Total);
@@ -70,7 +75,7 @@ namespace medicos_y_biomedicos.Datos
             }
         }
 
-        // Método para eliminar una venta por su Id
+        // Eliminar venta
         public bool Eliminar(int id)
         {
             using (SqlConnection conn = conexion.AbrirConexion())
@@ -81,7 +86,7 @@ namespace medicos_y_biomedicos.Datos
             }
         }
 
-        // Método para obtener una venta por su Id
+        // Obtener venta por Id
         public Venta ObtenerPorId(int id)
         {
             Venta venta = null;
@@ -96,6 +101,7 @@ namespace medicos_y_biomedicos.Datos
                     {
                         IdVenta = Convert.ToInt32(dr["IdVenta"]),
                         IdEquipo = Convert.ToInt32(dr["IdEquipo"]),
+                        IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
                         Fecha = Convert.ToDateTime(dr["Fecha"]),
                         Cantidad = Convert.ToInt32(dr["Cantidad"]),
                         Total = Convert.ToDecimal(dr["Total"])
@@ -105,4 +111,5 @@ namespace medicos_y_biomedicos.Datos
             return venta;
         }
     }
+
 }
