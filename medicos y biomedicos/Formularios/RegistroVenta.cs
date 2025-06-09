@@ -42,7 +42,7 @@ namespace medicos_y_biomedicos
                     Width = 240,
                     Height = 325,
                     Margin = new Padding(5),
-                    BorderStyle = BorderStyle.FixedSingle
+                    BorderStyle = BorderStyle.None
                 };
 
                 PictureBox pictureBox = new PictureBox
