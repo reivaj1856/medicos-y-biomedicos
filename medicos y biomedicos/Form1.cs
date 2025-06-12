@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -53,6 +54,7 @@ namespace medicos_y_biomedicos
                 MessageBox.Show("Inicio de sesión fallido. La aplicación se cerrará.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit(); // Close the application if login fails
             }
+            
         }
         #region menu
         private void customizeDesing()
@@ -228,7 +230,7 @@ namespace medicos_y_biomedicos
         private void panelsuperior_MouseMove(object sender, MouseEventArgs e)
         {
             ReleaseCapture();
-
+            SendMessage(this.Handle, 0x112, 0xf012, 0);
         }
 
         private void panelsuperior_Paint(object sender, PaintEventArgs e)
