@@ -16,9 +16,11 @@ namespace medicos_y_biomedicos
 {
     public partial class ResgistroMantenimiento : Form
     {
-        public ResgistroMantenimiento()
+        private Usuario usuarioActual;
+        public ResgistroMantenimiento(Usuario us)
         {
             InitializeComponent();
+            usuarioActual = us;
         }
         private void ResgistroMantenimiento_Load(object sender, EventArgs e)
         {
@@ -37,7 +39,7 @@ namespace medicos_y_biomedicos
                 Panel contenedor = new Panel
                 {
                     Width = 180,
-                    Height = 285,
+                    Height = 310,
                     Margin = new Padding(10),
                     BorderStyle = BorderStyle.None
                 };
@@ -62,7 +64,7 @@ namespace medicos_y_biomedicos
                 // Etiqueta con texto
                 Label label = new Label
                 {
-                    Text = $"{item.FechaIngreso}\n{item.Descripcion}\n{item.Estado}",
+                    Text = $"{item.FechaIngreso}\n{item.Descripcion}\n{item.Estado}\n{ item.Precio }Bs",
                     AutoSize = false,
                     Width = 160,
                     Height = 60,
@@ -142,12 +144,27 @@ namespace medicos_y_biomedicos
                     }
                 };
 
+
+                Button btnFactura = new Button
+                {
+                    Text = "Factura",
+                    Width = 160,
+                    Height = 30,
+                    Location = new Point(10, 275)
+                };
+                btnFactura.Click += (s, e) => {
+                    facturaMantenimiento facturaForm = new facturaMantenimiento(usuarioActual,(int)item.IdMantenimiento);
+                    facturaForm.ShowDialog();
+
+                };
+
                 // Agregar controles al panel contenedor
                 contenedor.Controls.Add(pictureBox);
                 contenedor.Controls.Add(label);
                 contenedor.Controls.Add(btnEstado);
                 contenedor.Controls.Add(btnEditar);
                 contenedor.Controls.Add(btnEliminar);
+                contenedor.Controls.Add(btnFactura);
 
                 // Agregar al FlowLayoutPanel
                 dataMantenimiento.Controls.Add(contenedor);

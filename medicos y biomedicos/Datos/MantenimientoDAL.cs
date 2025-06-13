@@ -12,18 +12,20 @@ namespace medicos_y_biomedicos.Datos
     public class MantenimientoDAL
     {
         private readonly Conexion conexion = new Conexion();
+
         public bool Insertar(Mantenimiento m)
         {
             using (SqlConnection conn = conexion.AbrirConexion())
             {
                 SqlCommand cmd = new SqlCommand(
-                    "INSERT INTO Mantenimiento (FechaIngreso, Estado, Descripcion, Imagen) VALUES (@FechaIngreso, @Estado, @Descripcion, @Imagen)",
+                    "INSERT INTO Mantenimiento (FechaIngreso, Estado, Descripcion, Imagen, Precio) VALUES (@FechaIngreso, @Estado, @Descripcion, @Imagen, @Precio)",
                     conn
                 );
                 cmd.Parameters.AddWithValue("@FechaIngreso", m.FechaIngreso);
                 cmd.Parameters.AddWithValue("@Estado", m.Estado);
                 cmd.Parameters.AddWithValue("@Descripcion", m.Descripcion);
                 cmd.Parameters.AddWithValue("@Imagen", m.Imagen);
+                cmd.Parameters.AddWithValue("@Precio", m.Precio); // Añadido el parámetro para el precio
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
@@ -43,6 +45,7 @@ namespace medicos_y_biomedicos.Datos
             }
             return lista;
         }
+
         private static Mantenimiento NewMethod(SqlDataReader dr)
         {
             return new Mantenimiento
@@ -51,12 +54,10 @@ namespace medicos_y_biomedicos.Datos
                 FechaIngreso = Convert.ToDateTime(dr["FechaIngreso"]),
                 Estado = dr["Estado"].ToString(),
                 Descripcion = dr["Descripcion"].ToString(),
-                Imagen = dr["Imagen"] == DBNull.Value ? null : (byte[])dr["Imagen"]
+                Imagen = dr["Imagen"] == DBNull.Value ? null : (byte[])dr["Imagen"],
+                Precio = Convert.ToDecimal(dr["Precio"]) // Aquí se convierte el precio a decimal
             };
-            
         }
-
-
 
         // Método para actualizar un mantenimiento existente
         public bool Actualizar(Mantenimiento m)
@@ -64,7 +65,7 @@ namespace medicos_y_biomedicos.Datos
             using (SqlConnection conn = conexion.AbrirConexion())
             {
                 SqlCommand cmd = new SqlCommand(
-                "UPDATE Mantenimiento SET FechaIngreso = @FechaIngreso, Estado = @Estado, Descripcion = @Descripcion, Imagen = @Imagen WHERE IdMantenimiento = @IdMantenimiento",
+                "UPDATE Mantenimiento SET FechaIngreso = @FechaIngreso, Estado = @Estado, Descripcion = @Descripcion, Imagen = @Imagen, Precio = @Precio WHERE IdMantenimiento = @IdMantenimiento",
                 conn
                 );
 
@@ -76,6 +77,7 @@ namespace medicos_y_biomedicos.Datos
                     cmd.Parameters.AddWithValue("@Imagen", m.Imagen);
                 else
                     cmd.Parameters.Add("@Imagen", SqlDbType.VarBinary).Value = DBNull.Value;
+                cmd.Parameters.AddWithValue("@Precio", m.Precio); // Añadido el parámetro para el precio
 
                 return cmd.ExecuteNonQuery() > 0;
             }
@@ -109,12 +111,14 @@ namespace medicos_y_biomedicos.Datos
                         FechaIngreso = Convert.ToDateTime(dr["FechaIngreso"]),
                         Estado = dr["Estado"].ToString(),
                         Descripcion = dr["Descripcion"].ToString(),
-                        Imagen = dr["Imagen"] == DBNull.Value ? null : (byte[])dr["Imagen"]
+                        Imagen = dr["Imagen"] == DBNull.Value ? null : (byte[])dr["Imagen"],
+                        Precio = Convert.ToDecimal(dr["Precio"]) // Cargamos el precio
                     };
                 }
             }
             return m;
         }
+
         public bool CambiarEstado(int id, string nuevoEstado)
         {
             using (SqlConnection conn = conexion.AbrirConexion())
@@ -124,11 +128,11 @@ namespace medicos_y_biomedicos.Datos
                 {
                     cmd.Parameters.AddWithValue("@Estado", nuevoEstado);
                     cmd.Parameters.AddWithValue("@IdMantenimiento", id);
-
-                        return cmd.ExecuteNonQuery() > 0;
+                    return cmd.ExecuteNonQuery() > 0;
                 }
             }
         }
+
         public bool EliminarImagen(int id)
         {
             using (SqlConnection conn = conexion.AbrirConexion())
@@ -141,9 +145,8 @@ namespace medicos_y_biomedicos.Datos
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
-        // Asegúrate de tener también este método para cargar los datos:
-
     }
+
 
 }
 

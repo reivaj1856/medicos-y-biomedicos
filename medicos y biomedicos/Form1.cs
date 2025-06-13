@@ -156,7 +156,7 @@ namespace medicos_y_biomedicos
 
         private void btnmantenimiento_Click(object sender, EventArgs e)
         {
-            AbrirFormulario(new ResgistroMantenimiento());
+            AbrirFormulario(new ResgistroMantenimiento(us));
             hideSubMenu();
         }
         private void button3_Click_1(object sender, EventArgs e)
@@ -220,7 +220,7 @@ namespace medicos_y_biomedicos
 
         private void button3_Click(object sender, EventArgs e)
         {
-            AbrirFormulario(new ResgistroMantenimiento());
+            AbrirFormulario(new ResgistroMantenimiento(us));
             
         }
 

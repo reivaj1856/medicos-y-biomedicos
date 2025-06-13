@@ -38,7 +38,7 @@ namespace medicos_y_biomedicos
                 Panel contenedor = new Panel
                 {
                     Width = 240,
-                    Height = 325,
+                    Height = 110,
                     Margin = new Padding(5),
                     BorderStyle = BorderStyle.None
                 };

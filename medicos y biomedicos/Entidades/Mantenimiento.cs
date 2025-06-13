@@ -13,5 +13,7 @@ namespace medicos_y_biomedicos.Entidades
         public string Estado { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
         public byte[] Imagen { get; internal set; }
+        public decimal Precio { get; set; } // Precio del mantenimiento
+
     }
 }

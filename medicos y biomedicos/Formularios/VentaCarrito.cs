@@ -179,7 +179,8 @@ namespace medicos_y_biomedicos.Formularios
 
                 // Vaciar el carrito
                 carritoDAL.EliminarCarrito(idUsuario);
-
+                VentaFormulario ventaForm = new VentaFormulario(idVentaGenerada, usuarioActual);
+                ventaForm.ShowDialog(); // Mostrar la venta realizada
                 MessageBox.Show("Compra realizada con éxito.");
                 return true;
             }

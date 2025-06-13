@@ -138,6 +138,8 @@ namespace medicos_y_biomedicos.Formularios
                             item.Cantidad = item.Cantidad- cantidad;
                             equipoDAL.Actualizar(item);
                             MessageBox.Show("Venta registrada con éxito.");
+                            VentaFormulario ventaForm = new VentaFormulario(idVentaGenerado, us);
+                            ventaForm.ShowDialog();
                             CargarEquipos();
                         }
                         else
@@ -180,6 +182,7 @@ namespace medicos_y_biomedicos.Formularios
                     if (insertado)
                     {
                         MessageBox.Show("Producto agregado al carrito.");
+
                         CargarEquipos();
                     }
                     else
