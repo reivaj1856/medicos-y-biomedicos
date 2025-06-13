@@ -28,19 +28,26 @@ namespace medicos_y_biomedicos.Formularios
         private void btnCrear_Click(object sender, EventArgs e)
         {
             string nombre = textNombre.Text.Trim();
+            string apellido = textApellido.Text.Trim();
+            string direccion = textDireccion.Text.Trim();
+            string nit = textNIT.Text.Trim();
             string cuenta = textCuenta.Text.Trim();
             string contraseña = textContraseña.Text.Trim();
-            string administrador = "no";
             byte[] imagen = null;
 
-            // Validar campos básicos
-            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(cuenta) || string.IsNullOrWhiteSpace(contraseña))
+            // Validar campos obligatorios
+            if (string.IsNullOrWhiteSpace(nombre) ||
+                string.IsNullOrWhiteSpace(apellido) ||
+                string.IsNullOrWhiteSpace(direccion) ||
+                string.IsNullOrWhiteSpace(nit) ||
+                string.IsNullOrWhiteSpace(cuenta) ||
+                string.IsNullOrWhiteSpace(contraseña))
             {
-                MessageBox.Show("Debes ingresar un nombre, una cuenta y una contraseña.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Todos los campos son obligatorios.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Obtener imagen si existe
+            // Obtener imagen del PictureBox si existe
             if (pictureBox3.Image != null)
             {
                 using (MemoryStream ms = new MemoryStream())
@@ -63,10 +70,13 @@ namespace medicos_y_biomedicos.Formularios
             Usuario nuevoUsuario = new Usuario
             {
                 Nombre = nombre,
+                Apellido = apellido,
+                Direccion = direccion,
+                NIT = nit,
                 Cuenta = cuenta,
                 Contraseña = contraseña,
-                Administrador = administrador,
-                Imagen = imagen
+                Imagen = imagen,
+                Administrador = "no"
             };
 
             bool resultado = dal.CrearUsuario(nuevoUsuario);
@@ -75,10 +85,13 @@ namespace medicos_y_biomedicos.Formularios
             {
                 MessageBox.Show("Usuario registrado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 textNombre.Clear();
+                textApellido.Clear();
+                textDireccion.Clear();
+                textNIT.Clear();
                 textCuenta.Clear();
                 textContraseña.Clear();
                 pictureBox3.Image = null;
-                
+                Close();
             }
             else
             {
