@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace medicos_y_biomedicos.Entidades
 {
-    public class Venta
+    public class DetalleVenta
     {
+        public int IdDetalle { get; set; }
         public int IdVenta { get; set; }
-        public int IdUsuario { get; set; }
-        public DateTime Fecha { get; set; }
-        public List<DetalleVenta> Detalles { get; set; } = new List<DetalleVenta>();
+        public int IdEquipo { get; set; }
+        public decimal Cantidad { get; set; }
         public decimal Total { get; set; }
-       
     }
 }
-

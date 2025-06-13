@@ -22,7 +22,9 @@ namespace medicos_y_biomedicos
         public VentanaVenta(Usuario us)
         {
             InitializeComponent();  
+            comboBox1.SelectedIndex = 0; // Seleccionar el primer elemento por defecto
             this.us = us; // Guardar el usuario para futuras referencias si es necesario
+            // o agrégalo a un panel si es necesario
         }
 
         private void CargarEquipos()
@@ -30,17 +32,21 @@ namespace medicos_y_biomedicos
             EquipoDAL dal = new EquipoDAL();
             List<Equipo> listaEquipos = dal.Listar();
 
-            // HashSet para evitar modelos duplicados
-            HashSet<string> modelosMostrados = new HashSet<string>();
+            // Obtener criterio seleccionado del ComboBox
+            string criterio = comboBox1.SelectedItem?.ToString();
 
+            // Usamos un HashSet para evitar duplicados
+            HashSet<string> itemsMostrados = new HashSet<string>();
             panelVentas.Controls.Clear();
 
             foreach (Equipo item in listaEquipos)
             {
-                if (modelosMostrados.Contains(item.Modelo))
-                    continue; // Ya se mostró un equipo de este modelo
+                string clave = criterio == "Categoría" ? item.Categoria : item.Modelo;
 
-                modelosMostrados.Add(item.Modelo); // Registrar el modelo como mostrado
+                if (itemsMostrados.Contains(clave))
+                    continue;
+
+                itemsMostrados.Add(clave);
 
                 // Crear panel contenedor
                 Panel contenedor = new Panel
@@ -51,7 +57,6 @@ namespace medicos_y_biomedicos
                     BorderStyle = BorderStyle.None,
                 };
 
-                // Imagen
                 PictureBox pictureBox = new PictureBox
                 {
                     Width = 220,
@@ -68,10 +73,9 @@ namespace medicos_y_biomedicos
                     }
                 }
 
-                // Etiqueta con texto
                 Label label = new Label
                 {
-                    Text = $"{item.Modelo}",
+                    Text = clave,
                     AutoSize = false,
                     Width = 220,
                     Height = 60,
@@ -80,16 +84,22 @@ namespace medicos_y_biomedicos
                     Font = new Font("Consolas", 14, FontStyle.Regular),
                 };
 
-                // Eventos opcionales de clic
-                pictureBox.Click += (s, e) =>  AbrirFormulario(new MostrarMarcas(item.Modelo,this.us)); 
-                label.Click += (s, e) => AbrirFormulario(new MostrarMarcas(item.Modelo, this.us));
-                contenedor.Click += (s, e) => AbrirFormulario(new MostrarMarcas(item.Modelo, this.us));
+                // Eventos según filtro
+                if (criterio == "Categoría")
+                {
+                    pictureBox.Click += (s, e) => AbrirFormulario(new MostrarMarcas(clave, us,false));
+                    label.Click += (s, e) => AbrirFormulario(new MostrarMarcas(clave, us, false));
+                    contenedor.Click += (s, e) => AbrirFormulario(new MostrarMarcas(clave, us, false));
+                }
+                else // Modelo
+                {
+                    pictureBox.Click += (s, e) => AbrirFormulario(new MostrarMarcas(clave, us, true));
+                    label.Click += (s, e) => AbrirFormulario(new MostrarMarcas(clave, us, true));
+                    contenedor.Click += (s, e) => AbrirFormulario(new MostrarMarcas(clave, us, true));
+                }
 
-                // Agregar controles al panel contenedor
                 contenedor.Controls.Add(pictureBox);
                 contenedor.Controls.Add(label);
-
-                // Agregar al FlowLayoutPanel
                 panelVentas.Controls.Add(contenedor);
             }
         }
@@ -118,6 +128,9 @@ namespace medicos_y_biomedicos
             formulario.Show();
         }
 
-
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CargarEquipos();
+        }
     }
 }

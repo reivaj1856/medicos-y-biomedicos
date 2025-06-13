@@ -25,6 +25,8 @@ namespace medicos_y_biomedicos.Formularios
         public RegistrarEquipo(int id)
         {
             InitializeComponent();
+            CategoriaDAL dal = new CategoriaDAL();
+            dal.CargarCategoriasEnComboBox(comboCategoria);
             this.id = id; // Asignar el id del equipo a editar
         }
         private void RegistrarEquipo_Load(object sender, EventArgs e)
@@ -40,6 +42,7 @@ namespace medicos_y_biomedicos.Formularios
                     textBoxMarca.Text = equipo.Marca;
                     textBoxModelo.Text = equipo.Modelo;
                     numericPrecio.Value = equipo.Precio;
+                    numericCantidad.Value = equipo.Cantidad; // Asumiendo que tienes un campo Cantidad en tu entidad Equipo
                     MostrarImagen(equipo.Imagen); // Mostrar imagen si existe
                 }
                 else
@@ -56,7 +59,7 @@ namespace medicos_y_biomedicos.Formularios
             if (string.IsNullOrWhiteSpace(textBoxEquipo.Text) ||
                 string.IsNullOrWhiteSpace(textBoxMarca.Text) ||
                 string.IsNullOrWhiteSpace(textBoxModelo.Text) ||
-                numericPrecio.Value <= 1)
+                numericPrecio.Value <= 1 || numericCantidad.Value < 1)
             {
                 MessageBox.Show("Por favor, complete todos los campos correctamente.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -71,6 +74,8 @@ namespace medicos_y_biomedicos.Formularios
                     Marca = textBoxMarca.Text.Trim(),
                     Modelo = textBoxModelo.Text.Trim(),
                     Precio = numericPrecio.Value,
+                    Cantidad = numericCantidad.Value,
+                    Categoria = comboCategoria.Text,// Asumiendo que tienes un campo Cantidad en tu entidad Equipo
                     Imagen = ImagenAPBytes() // Convertir imagen a bytes
                 };
 
@@ -118,6 +123,7 @@ namespace medicos_y_biomedicos.Formularios
             textBoxMarca.Text = "";
             textBoxModelo.Text = "";
             numericPrecio.Value = 0;
+            numericCantidad.Value = 0;
         }
 
         private void btnImportar_Click(object sender, EventArgs e)
@@ -157,6 +163,12 @@ namespace medicos_y_biomedicos.Formularios
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            CategoriaDAL dal = new CategoriaDAL();
+            dal.CargarCategoriasEnComboBox(comboCategoria);
         }
     }
 }

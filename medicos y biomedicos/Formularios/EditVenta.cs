@@ -24,16 +24,29 @@ namespace medicos_y_biomedicos.Formularios
         }
         private void EditarVenta_Load(object sender, EventArgs e)
         {
-            // Cargar datos si el id es válido
             VentaDAL ventaDAL = new VentaDAL();
             Venta venta = ventaDAL.ObtenerPorId(idVenta);
-            idEquipo = venta.IdEquipo; // Asignar el IdEquipo para usarlo al guardar
-            idUsuario = venta.IdUsuario;
+
             if (venta != null)
             {
+                // Asignar usuario y fecha
+                idUsuario = venta.IdUsuario;
                 calendarFecha.SetDate(venta.Fecha);
-                numericCantidad.Value = venta.Cantidad;
-                numericTotal.Value = venta.Total;
+
+                // Obtener el primer detalle de venta (asumimos uno solo)
+                if (venta.Detalles != null && venta.Detalles.Count > 0)
+                {
+                    var detalle = venta.Detalles.First();
+
+                    idEquipo = detalle.IdEquipo; // Guardar IdEquipo para actualizar luego
+
+                    numericTotal.Value = venta.Total;
+                }
+                else
+                {
+                    MessageBox.Show("La venta no contiene detalles.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    this.Close();
+                }
             }
             else
             {
@@ -45,18 +58,17 @@ namespace medicos_y_biomedicos.Formularios
         {
             try
             {
+                VentaDAL ventaDAL = new VentaDAL();
+                // Crear entidad Venta con su detalle
                 Venta ventaEditada = new Venta
                 {
                     IdVenta = idVenta,
-                    IdEquipo = idEquipo, // Usar el IdEquipo cargado
                     IdUsuario = idUsuario,
                     Fecha = calendarFecha.SelectionStart,
-                    Cantidad = (int)numericCantidad.Value,
-                    Total = numericTotal.Value
-
+                    Total = numericTotal.Value,
+                   
                 };
-                VentaDAL ventaDAL = new VentaDAL();
-                bool resultado = ventaDAL.Actualizar(ventaEditada);
+                bool resultado = ventaDAL.ActualizarSolo(ventaEditada); // Este método debe actualizar Venta y DetalleVenta
 
                 if (resultado)
                 {

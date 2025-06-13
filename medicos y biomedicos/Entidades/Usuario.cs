@@ -10,6 +10,9 @@ namespace medicos_y_biomedicos.Entidades
     {
         public int IdUsuario { get; set; }
         public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public string Direccion { get; set; }
+        public string NIT { get; set; }
         public string Cuenta { get; set; }
         public string Contraseña { get; set; }
         public string Administrador { get; set; }  // "sí" o "no", o cualquier otra convención que uses
@@ -26,7 +29,8 @@ namespace medicos_y_biomedicos.Entidades
         }
 
         // Constructor con parámetros
-        public Usuario(int idUsuario, string nombre, string cuenta, string contraseña, string administrador, byte[] imagen)
+        public Usuario(int idUsuario, string nombre, string cuenta, string contraseña, string administrador, byte[] imagen,
+            string apellido, string direccion, string nit)
         {
             IdUsuario = idUsuario;
             Nombre = nombre;
@@ -34,6 +38,9 @@ namespace medicos_y_biomedicos.Entidades
             Contraseña = contraseña;
             Administrador = administrador;
             Imagen = imagen;
+            Apellido = apellido;
+            Direccion = direccion;
+            NIT = nit;
         }
     }
 }

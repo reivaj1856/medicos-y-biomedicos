@@ -13,6 +13,8 @@ namespace medicos_y_biomedicos.Entidades
         public string Marca { get; set; } = string.Empty;
         public string Modelo { get; set; } = string.Empty;
         public decimal Precio { get; set; }
+        public decimal Cantidad { get; set; }
+        public string Categoria { get; set; }
         public byte[] Imagen { get; internal set; }
     }
 }

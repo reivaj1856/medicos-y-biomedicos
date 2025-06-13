@@ -32,9 +32,7 @@ namespace medicos_y_biomedicos
             {
                 EquipoDAL equipoDAL = new EquipoDAL();
                 UsuarioDAL usuarioDAL = new UsuarioDAL();
-
-                // Obtener el equipo y el usuario relacionado
-                Equipo equipo = equipoDAL.ObtenerPorId(venta.IdEquipo);
+ 
                 Usuario usuario = usuarioDAL.ObtenerPorId(venta.IdUsuario);
 
                 Panel contenedor = new Panel
@@ -45,36 +43,16 @@ namespace medicos_y_biomedicos
                     BorderStyle = BorderStyle.None
                 };
 
-                PictureBox pictureBox = new PictureBox
-                {
-                    Width = 220,
-                    Height = 120,
-                    SizeMode = PictureBoxSizeMode.StretchImage,
-                    Location = new Point(10, 10)
-                };
-
-                if (equipo?.Imagen != null)
-                {
-                    using (MemoryStream ms = new MemoryStream(equipo.Imagen))
-                    {
-                        pictureBox.Image = Image.FromStream(ms);
-                    }
-                }
-
                 Label label = new Label
                 {
-                    Text = $"Equipo: {equipo?.Nombre ?? "Desconocido"}\n" +
-                           $"Marca: {equipo?.Marca ?? "Desconocida"}\n" +
-                           $"Precio: {equipo?.Precio ?? 0} Bs\n" +
-                           $"Venta ID: {venta.IdVenta}\n" +
-                           $"Cuenta: {usuario?.Cuenta ?? "N/A"}\n" +
-                           $"Cantidad: {venta.Cantidad}\n" +
+                    Text = $"Venta ID: {venta.IdVenta}\n" +
+                           $"Cuenta: {usuario?.Cuenta ?? "N/A"}\n" +                   
                            $"Total: {venta.Total} Bs\n" +
                            $"Fecha: {venta.Fecha:dd/MM/yyyy}",
                     AutoSize = false,
                     Width = 220,
-                    Height = 170,
-                    Location = new Point(10, 140),
+                    Height = 70,
+                    Location = new Point(10, 10),
                     TextAlign = ContentAlignment.TopLeft,
                     Font = new Font("Consolas", 10, FontStyle.Regular)
                 };
@@ -85,7 +63,7 @@ namespace medicos_y_biomedicos
                     Text = "Editar",
                     Width = 70,
                     Height = 30,
-                    Location = new Point(35, 290)
+                    Location = new Point(35, 80)
                 };
                 btnEditar.Click += (s, e) => {
 
@@ -102,7 +80,7 @@ namespace medicos_y_biomedicos
                     Text = "Eliminar",
                     Width = 70,
                     Height = 30,
-                    Location = new Point(130, 290)
+                    Location = new Point(130, 80)
                 };
 
                 btnEliminar.Click += (s, e) =>
@@ -129,7 +107,6 @@ namespace medicos_y_biomedicos
                 };
                 contenedor.Controls.Add(btnEditar);
                 contenedor.Controls.Add(btnEliminar);
-                contenedor.Controls.Add(pictureBox);
                 contenedor.Controls.Add(label);
                 panelReVentas.Controls.Add(contenedor);
             }

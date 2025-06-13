@@ -238,6 +238,26 @@ namespace medicos_y_biomedicos
 
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Categoria categoria = new Categoria();
+            categoria.ShowDialog(); // Show the category form when the button is clicked
+        }
+
+        private void btnCarrito_Click(object sender, EventArgs e)
+        {
+            VentaCarrito ventaCarrito = new VentaCarrito(us);
+            AbrirFormulario(ventaCarrito);
+            hideSubMenu();
+        }
+
+        private void btnDetalleVentas_Click(object sender, EventArgs e)
+        {
+            DetalleVentas detalleVenta = new DetalleVentas();
+            AbrirFormulario(detalleVenta);
+            hideSubMenu();
+        }
+
         private void panelformularios_Paint(object sender, PaintEventArgs e)
         {
         }

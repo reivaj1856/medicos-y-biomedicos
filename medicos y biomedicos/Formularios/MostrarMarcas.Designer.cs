@@ -42,16 +42,18 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.Color.White;
             this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1051, 654);
+            this.panel1.Size = new System.Drawing.Size(788, 531);
             this.panel1.TabIndex = 0;
             // 
             // btnAtras
             // 
             this.btnAtras.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAtras.Location = new System.Drawing.Point(760, 54);
+            this.btnAtras.Location = new System.Drawing.Point(570, 44);
+            this.btnAtras.Margin = new System.Windows.Forms.Padding(2);
             this.btnAtras.Name = "btnAtras";
-            this.btnAtras.Size = new System.Drawing.Size(123, 40);
+            this.btnAtras.Size = new System.Drawing.Size(92, 32);
             this.btnAtras.TabIndex = 19;
             this.btnAtras.Text = "Atras";
             this.btnAtras.UseVisualStyleBackColor = true;
@@ -60,9 +62,10 @@
             // btnActualizar
             // 
             this.btnActualizar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnActualizar.Location = new System.Drawing.Point(889, 54);
+            this.btnActualizar.Location = new System.Drawing.Point(667, 44);
+            this.btnActualizar.Margin = new System.Windows.Forms.Padding(2);
             this.btnActualizar.Name = "btnActualizar";
-            this.btnActualizar.Size = new System.Drawing.Size(123, 40);
+            this.btnActualizar.Size = new System.Drawing.Size(92, 32);
             this.btnActualizar.TabIndex = 18;
             this.btnActualizar.Text = "Actualizar";
             this.btnActualizar.UseVisualStyleBackColor = true;
@@ -75,9 +78,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelVentas.AutoScroll = true;
             this.panelVentas.BackColor = System.Drawing.Color.White;
-            this.panelVentas.Location = new System.Drawing.Point(50, 116);
+            this.panelVentas.Location = new System.Drawing.Point(38, 94);
+            this.panelVentas.Margin = new System.Windows.Forms.Padding(2);
             this.panelVentas.Name = "panelVentas";
-            this.panelVentas.Size = new System.Drawing.Size(962, 501);
+            this.panelVentas.Size = new System.Drawing.Size(722, 407);
             this.panelVentas.TabIndex = 17;
             // 
             // label1
@@ -87,22 +91,24 @@
             this.label1.Dock = System.Windows.Forms.DockStyle.Top;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Padding = new System.Windows.Forms.Padding(50, 50, 0, 0);
-            this.label1.Size = new System.Drawing.Size(509, 82);
+            this.label1.Padding = new System.Windows.Forms.Padding(38, 41, 0, 0);
+            this.label1.Size = new System.Drawing.Size(391, 67);
             this.label1.TabIndex = 16;
             this.label1.Text = "Marcas disponibles en este modelo";
             // 
             // MostrarMarcas
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1051, 654);
+            this.ClientSize = new System.Drawing.Size(788, 531);
             this.Controls.Add(this.btnAtras);
             this.Controls.Add(this.btnActualizar);
             this.Controls.Add(this.panelVentas);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.panel1);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MostrarMarcas";
             this.Text = "MostrarMarcas";
             this.Load += new System.EventHandler(this.MostrarMarcas_Load);

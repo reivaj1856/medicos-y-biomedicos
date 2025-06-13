@@ -9,7 +9,7 @@ namespace medicos_y_biomedicos.Datos
 {
     public class Conexion
     {
-        private readonly string connectionString = "Server=CROMER-01;Database=medicosybiometicos;Trusted_Connection=True;";
+        private readonly string connectionString = "Server=CROMER;Database=medicosybiometicos;Trusted_Connection=True;";
 
         public SqlConnection AbrirConexion()
         {
